@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Category;
-use Illuminate\Support\Str;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CategoryResource;
+use App\Http\Resources\ProductResource;
 
-class CategoryController extends Controller
+class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $categories = Category::with('products')->get();
-        return CategoryResource::collection($categories);
+        $products = Product::with('category')->get();
+        return ProductResource::collection($products);
     }
 
     /**
@@ -30,12 +29,9 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
-    // public function show(string $id)
+    public function show(string $id)
     {
-        return new CategoryResource($category);
-        // ->response()
-        // ->header('X-Value', 'True');
+        //
     }
 
     /**
