@@ -23,6 +23,7 @@ class CategoryResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'photo' => asset('storage/'.$this->photo),
             'created_at' => $this->created_at,
             'created_at_diff' => $this->created_at->diffForHumans(now(), CarbonInterface::DIFF_ABSOLUTE), // param-3 = true for short term
             'products_count' => $products->count(),
