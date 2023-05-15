@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CategoryController;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,4 +37,27 @@ Route::get('products/{product}', [ProductController::class, 'show']);
 // Route::put('categories/{category}', [CategoryController::class, 'update']);
 // Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
 
-Route::apiResource('categories', CategoryController::class);
+Route::apiResource('categories', CategoryController::class)
+->middleware(['auth:sanctum','abilities:show-cat,cat-all']);
+
+// Route::get('/delete-token', function (Request $request) {
+//     return $request->user()->currentAccessToken()->delete();
+// });
+
+Route::post('/get-token', function (Request $request) {
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        'device_name' => 'required',
+    ]);
+ 
+    $user = User::where('email', $request->email)->first();
+ 
+    if (! $user || ! Hash::check($request->password, $user->password)) {
+        throw ValidationException::withMessages([
+            'email' => ['The provided credentials are incorrect.'],
+        ]);
+    }
+ 
+    return $user->createToken($request->device_name, ['show-cat'])->plainTextToken;
+});
